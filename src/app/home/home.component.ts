@@ -6,6 +6,8 @@ import { CoursesCardListComponent } from '../courses-card-list/courses-card-list
 import { openEditCourseDialog } from '../edit-course-dialog/edit-course-dialog.component';
 import { Course, sortCoursesBySeqNo } from '../models/course.model';
 import { CoursesService } from '../services/courses.service';
+import { LoadingService } from '../loading/loading.service';
+import { MessagesService } from '../messages/messages.service';
 
 @Component({
   selector: 'home',
@@ -27,6 +29,8 @@ export class HomeComponent {
     return courses.filter((course) => course.category === 'ADVANCED');
   });
 
+  messageServices = inject(MessagesService);
+
   constructor() {
     this.loadCourses().then(() =>
       console.log('all couses loaded', this.#courses())
@@ -38,8 +42,7 @@ export class HomeComponent {
       const courses = await this.coursesService.loadAllCourses();
       this.#courses.set(courses.sort(sortCoursesBySeqNo));
     } catch (error) {
-      console.log('##error', error);
-      alert('error !@#');
+      this.messageServices.showMessage('Error loading courses!', 'error');
     }
   }
 
@@ -69,5 +72,4 @@ export class HomeComponent {
     });
     this.#courses.set([...this.#courses(), newCourse]);
   }
-
 }
