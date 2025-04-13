@@ -24,6 +24,9 @@ export class CoursesCardListComponent {
       course,
     });
 
+    if (!newCourse) 
+        return;
+    
     console.log('##newCourse', newCourse);
     this.courseUpdated.emit(newCourse);
   }

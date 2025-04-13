@@ -70,6 +70,7 @@ export class HomeComponent {
       mode: 'create',
       title: 'Create Course',
     });
+    if (!newCourse) return;
     this.#courses.set([...this.#courses(), newCourse]);
   }
 }
