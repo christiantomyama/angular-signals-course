@@ -49,9 +49,9 @@ export class EditCourseDialogComponent {
     });
     this.category.set(this.data?.course?.category ?? 'BEGINNER');
 
-    effect(() => {
-        console.log('##category', this.category());
-    });
+    // effect(() => {
+    //     console.log('##category', this.category());
+    // });
   }
 
   onClose() {

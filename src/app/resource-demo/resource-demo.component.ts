@@ -20,9 +20,9 @@ export class ResourceDemoComponent {
 
   constructor() {
 
-    effect(() => {
-      console.log('searching lessons:', this.search() );
-    })
+    // effect(() => {
+    //   console.log('searching lessons:', this.search() );
+    // })
   }
 
   searchLessons(search: string) {
