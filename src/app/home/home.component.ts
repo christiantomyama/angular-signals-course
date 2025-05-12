@@ -1,4 +1,13 @@
-import { Component, computed, effect, inject, signal, viewChild } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  Injector,
+  signal,
+  viewChild,
+  WritableSignal,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTab, MatTabGroup } from '@angular/material/tabs';
 import { CourseComponent } from '../course/course.component';
@@ -9,6 +18,8 @@ import { CoursesService } from '../services/courses.service';
 import { LoadingService } from '../loading/loading.service';
 import { MessagesService } from '../messages/messages.service';
 import { MatTooltip } from '@angular/material/tooltip';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { catchError, from, interval, startWith } from 'rxjs';
 
 @Component({
   selector: 'home',
@@ -32,17 +43,19 @@ export class HomeComponent {
 
   messageServices = inject(MessagesService);
   begginersList = viewChild('beginnersList', {
-    read: MatTooltip
+    read: MatTooltip,
   });
 
+  //   courses$ = toObservable(this.#courses);
+
   constructor() {
-    effect(()=>{
-        console.log('begginersList', this.begginersList());
-        
-    })
-    this.loadCourses().then(() =>
-      console.log('all couses loaded', this.#courses())
-    );
+    this.courses$.subscribe((courses) => console.log(courses));
+
+    effect(() => {
+      //   console.log('begginersList', this.begginersList());
+    });
+    this.loadCourses();
+    // .then(() =>console.log('all couses loaded', this.#courses()));
   }
 
   async loadCourses() {
@@ -80,5 +93,50 @@ export class HomeComponent {
     });
     if (!newCourse) return;
     this.#courses.set([...this.#courses(), newCourse]);
+  }
+
+  onToObservableExample() {
+    const numbers = signal(0);
+    numbers.set(1);
+    numbers.set(2);
+    numbers.set(3);
+
+    const numbers$ = toObservable(numbers, { injector: this.injector });
+    numbers.set(4);
+    const subscription = numbers$.subscribe((value) => {
+      console.log('numbers$ value', value);
+    });
+    numbers.set(5);
+  }
+
+  injector = inject(Injector);
+  courses$ = from(this.coursesService.loadAllCourses());
+
+  toSignalExample() {
+    try {
+      const courses$ = from(this.coursesService.loadAllCourses()).pipe(
+        catchError((err) => {
+          console.log('catchError 1 ', err);
+          throw err;
+        })
+      );
+
+      const courses = toSignal(courses$, {
+        injector: this.injector,
+        rejectErrors: true,
+      });
+      effect(
+        () => {
+          console.log('number$ 3', courses());
+        },
+        { injector: this.injector }
+      );
+
+      setInterval(() => {
+        console.log('number$ 4', courses());
+      }, 1000);
+    } catch (error) {
+      console.log('##catch BLOCK error 2 ', error);
+    }
   }
 }

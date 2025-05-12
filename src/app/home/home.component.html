@@ -3,6 +3,9 @@
 
   <button class="btn" (click)="onAddCourse()">Add Course</button>
 
+    <button class="btn" (click)="onToObservableExample()">toObservable</button>
+    <button class="btn" (click)="toSignalExample()">toSignal</button>
+
   <mat-tab-group>
     <mat-tab label="Beginners">
       <courses-card-list #beginnersList matTooltip="These are the beginner courses"
